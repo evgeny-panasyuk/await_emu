@@ -5,7 +5,7 @@ Full emulation of `await` feature from C# language in C++ based on Stackful Coro
 
 This proof-of-concept shows that exact syntax of `await` feature can be emulated with help of Stackful Coroutines, demonstrating that it is superior mechanism.
 
-Main aim of this proof-of-concept is to draw attention to Stackful Coroutines.
+Main aim of this proof-of-concept is to draw attention to Stackful Coroutines, but not emulation of `await` itself, because stackful coroutines is superior mechanism and allows to reach higher levels of asynchronous encapsulation.
 
 Code example
 ============
@@ -41,7 +41,7 @@ void async_user_handler()
 ```
 `await` takes `std::future`-like object with support of continuation attachment (e.g. [`.then`](http://www.boost.org/doc/libs/1_54_0/doc/html/thread/synchronization.html#thread.synchronization.futures.then)), and "returns result" of future.
 
-At this example `boost::async` is used. But that approach can be extended to work with other futures, like PPL's [`task::then`](http://msdn.microsoft.com/en-us/library/hh750044.aspx) or WinRT's [`IAsyncOperation::Completed`](http://msdn.microsoft.com/en-us/library/windows/apps/br206598.aspx?cs-save-lang=1&cs-lang=cpp#code-snippet-1)
+At this example `boost::async` is used. But that approach can be extended to work with other futures, like PPL's [`task::then`](http://msdn.microsoft.com/en-us/library/hh750044.aspx), etc.
 
 Output example:
 ```
