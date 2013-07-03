@@ -1,0 +1,15 @@
+cmake_minimum_required(VERSION 2.8)
+project(coro_example)
+
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_definitions(-Wall -Werror -Winit-self -Wmissing-include-dirs -Wfloat-equal -Wpointer-arith)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(MSVC)
+    add_definitions("/W3" "/WX")
+    OPTION(Boost_USE_STATIC_LIBS "")
+endif()
+
+find_package( Boost 1.53.0 COMPONENTS date_time chrono context system thread REQUIRED)
+add_executable(coro_example main.cpp)
+include_directories(${Boost_INCLUDE_DIRS})
+target_link_libraries(coro_example ${Boost_LIBRARIES})
