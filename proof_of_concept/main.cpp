@@ -16,11 +16,11 @@
 #define BOOST_RESULT_OF_USE_DECLTYPE
 
 #include <boost/coroutine/all.hpp>
+#include <boost/type_traits.hpp>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 
-#include <type_traits>
 #include <functional>
 #include <iostream>
 #include <cstddef>
@@ -41,19 +41,19 @@ template<typename T>
 class concurrent_queue
 {
     queue<T> q;
-    mutex m;
-    condition_variable c;
+    boost::mutex m;
+    boost::condition_variable c;
 public:
     template<typename U>
     void push(U &&u)
     {
-        lock_guard<mutex> l(m);
+        boost::lock_guard<boost::mutex> l(m);
         q.push( forward<U>(u) );
         c.notify_one();
     }
     void pop(T &result)
     {
-        unique_lock<mutex> u(m);
+        boost::unique_lock<boost::mutex> u(m);
         c.wait(u, [&]{return !q.empty();} );
         result = move_if_noexcept(q.front());
         q.pop();
@@ -66,7 +66,7 @@ auto finished = false;
 
 void reschedule()
 {
-    this_thread::sleep_for(chrono::milliseconds( rand() % 2000 ));
+    this_thread::sleep_for(boost::chrono::milliseconds( rand() % 2000 ));
 }
 
 // ___________________________________________________________ //
@@ -125,7 +125,7 @@ struct Awaiter
     auto operator*(Future &&ft) -> decltype(ft.get())
     {
         typedef decltype(ft.get()) Result;
-        typedef typename std::remove_reference<Future>::type FutureValue;
+        typedef typename boost::remove_reference<Future>::type FutureValue;
 
         auto &&current_coro = coro_stack.top();
         auto result = ft.then([current_coro](FutureValue ready) -> Result
