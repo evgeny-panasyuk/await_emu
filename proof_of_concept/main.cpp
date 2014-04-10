@@ -20,6 +20,7 @@
 #include <boost/thread.hpp>
 #include <boost/chrono.hpp>
 
+#include <type_traits>
 #include <functional>
 #include <iostream>
 #include <cstddef>
@@ -124,9 +125,10 @@ struct Awaiter
     auto operator*(Future &&ft) -> decltype(ft.get())
     {
         typedef decltype(ft.get()) Result;
+        typedef typename std::remove_reference<Future>::type FutureValue;
 
         auto &&current_coro = coro_stack.top();
-        auto result = ft.then([current_coro](Future &ft) -> Result
+        auto result = ft.then([current_coro](FutureValue ready) -> Result
         {
             main_tasks.push([current_coro]
             {
@@ -134,7 +136,7 @@ struct Awaiter
                 (*coro_stack.top().coro)();
                 coro_stack.pop();
             });
-            return ft.get();
+            return ready.get();
         });
         (*coro_stack.top().caller)();
         return result.get();

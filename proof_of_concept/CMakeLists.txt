@@ -9,7 +9,7 @@ elseif(MSVC)
     OPTION(Boost_USE_STATIC_LIBS "")
 endif()
 
-find_package( Boost 1.55.0 COMPONENTS date_time chrono context system thread REQUIRED)
+find_package( Boost 1.55.0 COMPONENTS date_time chrono context coroutine system thread REQUIRED)
 add_executable(coro_example main.cpp)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(coro_example ${Boost_LIBRARIES})
