@@ -70,11 +70,18 @@ void reschedule()
 
 // ___________________________________________________________ //
 
-typedef coroutines::coroutine<void()> Coro;
+#ifdef BOOST_COROUTINES_UNIDIRECT
+    typedef coroutines::pull_coroutine<void>            coro_pull;
+    typedef coroutines::push_coroutine<void>            coro_push;
+#else
+    typedef coroutines::coroutine<void()>               coro_pull;
+    typedef coroutines::coroutine<void()>::caller_type  coro_push;
+#endif
+
 struct CurrentCoro
 {
-    std::shared_ptr<Coro> coro;
-    Coro::caller_type *caller;
+    std::shared_ptr<coro_pull> coro;
+    coro_push *caller;
 };
 /*should be thread_local*/ stack<CurrentCoro> coro_stack;
 
@@ -92,7 +99,7 @@ auto asynchronous(F f) -> future<decltype(f())>
     //     for purposes of this proof-of-concept
     CurrentCoro current_coro =
     {
-        make_shared<Coro>(std::bind( [f](CoroPromise &coro_promise, Coro::caller_type &caller)
+        make_shared<coro_pull>(std::bind( [f](CoroPromise &coro_promise, coro_push &caller)
         {
             caller();
             coro_stack.top().caller = &caller;
