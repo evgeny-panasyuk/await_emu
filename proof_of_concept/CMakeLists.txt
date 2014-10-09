@@ -10,6 +10,6 @@ elseif(MSVC)
 endif()
 
 find_package( Boost 1.55.0 COMPONENTS date_time chrono context coroutine system thread REQUIRED)
-add_executable(coro_example main.cpp)
+add_executable(coro_example first_demo_cpp11.cpp)
 include_directories(${Boost_INCLUDE_DIRS})
 target_link_libraries(coro_example ${Boost_LIBRARIES})
